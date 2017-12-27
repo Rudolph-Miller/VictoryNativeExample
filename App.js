@@ -12,14 +12,29 @@ import {
   View
 } from 'react-native';
 import {
-  VictoryChart, VictoryLine, VictoryAxis,
-  VictoryBrushContainer, VictoryZoomContainer
+  VictoryChart, VictoryLine, VictoryZoomContainer,
+  VictoryTooltip
 } from 'victory-native';
 
 const INITIAL_A_DOMAIN = [
   new Date(1990, 1, 1),
   new Date(2009, 1, 1)
 ];
+
+class CustomTooltip extends React.Component {
+  render() {
+    const { domain, index, data } = this.props;
+    const datum = data[index];
+    const active = datum.a >= domain.x[0] && datum.a <= domain.x[1];
+
+    return (
+      <VictoryTooltip
+        {...this.props}
+        active={active}
+      />
+    );
+  }
+}
 
 export default class App extends React.Component {
   constructor() {
@@ -87,6 +102,11 @@ export default class App extends React.Component {
           <VictoryLine
             style={{ data: { stroke: "tomato" } }}
             data={this.data}
+            labels={(item) => item.b}
+            labelComponent={
+              <CustomTooltip
+                domain={this.state.domain} />
+            }
             x="a"
             y="b" />
       </VictoryChart>
